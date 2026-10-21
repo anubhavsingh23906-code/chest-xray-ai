@@ -1,0 +1,4 @@
+region,activation_percent,sample_size,mask_type
+Lung regions,28.85,1,Approximate manual polygon
+Other image content,58.12,1,"Outside manual polygon, excluding padding"
+Padding,13.03,1,Geometric padding mask
