@@ -1,0 +1,6 @@
+,lung_proxy_activation_pct,lung_proxy_activation_pct,other_content_activation_pct,other_content_activation_pct,padding_activation_pct,padding_activation_pct
+,mean,std,mean,std,mean,std
+group,,,,,,
+Correct NORMAL,27.56,5.71,52.15,8.22,20.29,5.96
+Correct PNEUMONIA,41.93,20.59,40.95,13.96,17.12,13.38
+NORMAL false positives,42.62,7.26,50.49,4.55,6.89,6.37

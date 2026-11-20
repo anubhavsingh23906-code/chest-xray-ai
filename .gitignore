@@ -1,14 +1,34 @@
-venv/
-__pycache__/
-*.pyc
 
+# Python environments
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Jupyter temporary files
 .ipynb_checkpoints/
 
+# Dataset files
 data/raw/
 data/processed/
 
+# Model checkpoints and serialized objects
 models/*.pth
 models/*.pt
 models/*.pkl
-
+models/**/*.pth
+models/**/*.pt
+models/**/*.pkl
+# Environment variables and secrets
 .env
+.env.*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Temporary files
+*.tmp
+*.log
+Untitled_backup.ipynb
