@@ -1,99 +1,228 @@
-# AI Medical Image Diagnosis & Explainability
-## Chest X-ray Pneumonia Detection Using Deep Learning
+# Chest X-ray Pneumonia Detection & Explainability
 
-An educational deep-learning project that classifies chest X-ray images as **NORMAL** or **PNEUMONIA** using a custom PyTorch CNN. The project also explores Grad-CAM visual explanations, preprocessing choices, classification thresholds, and potential sources of model error.
+A deep-learning research project that classifies chest X-ray images into **NORMAL** and **PNEUMONIA** categories using a custom Convolutional Neural Network (CNN) built with PyTorch.
 
-> **Disclaimer:** This is an educational research prototype, not a clinically validated diagnostic system. It must not be used to make medical decisions.
+Beyond classification, this project investigates model behavior through **Grad-CAM explainability, preprocessing sensitivity, marker-region interventions, and corner suppression experiments**.
+
+> **Disclaimer:** This is an educational research prototype, not a clinically validated diagnostic system. It must not be used for medical diagnosis or treatment decisions.
 
 ## Project Overview
 
-The goal is to build and evaluate a chest X-ray classification pipeline while investigating whether the model's predictions are reliable beyond the validation dataset.
+The objective is not only to train a CNN, but also to investigate how its predictions behave under different evaluation conditions and controlled image modifications.
 
-### Workflow
+### Key Highlights
 
-1. Load chest X-ray images.
-2. Preprocess images using grayscale conversion, resizing, and padding.
-3. Train a custom convolutional neural network (CNN).
-4. Evaluate predictions using classification metrics and ROC-AUC.
-5. Investigate classification thresholds using validation data.
-6. Explore Grad-CAM visualizations and padding sensitivity.
+- Custom PyTorch CNN for binary chest X-ray classification.
+- Grayscale image preprocessing with aspect-ratio-preserving resizing and padding.
+- Validation-based classification threshold analysis.
+- Grad-CAM visualizations for model explainability.
+- Marker-region sensitivity experiments using controlled image modifications.
+- Corner suppression fine-tuning to investigate potential border-related sensitivity.
+- Evaluation of the validation-to-test performance gap.
 
 ## Tech Stack
 
-- **Language:** Python
-- **Deep Learning:** PyTorch
-- **Image Processing:** Pillow, torchvision
-- **Data Analysis:** NumPy, Pandas
-- **Evaluation:** scikit-learn
-- **Visualization:** Matplotlib
-- **Explainability:** Grad-CAM
+| Area | Technologies |
+|---|---|
+| Language | Python |
+| Deep Learning | PyTorch |
+| Image Processing | Pillow, torchvision |
+| Data Analysis | NumPy, Pandas |
+| Machine Learning | scikit-learn |
+| Visualization | Matplotlib |
+| Explainability | Grad-CAM |
+| Development | Jupyter Notebook |
 
 ## Dataset
 
 The project uses a chest X-ray dataset with two classes:
 
-- `NORMAL` — images labeled as normal
-- `PNEUMONIA` — images labeled as pneumonia
+- `NORMAL` â€” images labeled as normal.
+- `PNEUMONIA` â€” images labeled as pneumonia.
 
-The training directory contains 5,216 images. A stratified split was used to create training and validation subsets. The official test directory contains 624 images: 234 NORMAL and 390 PNEUMONIA.
+| Dataset portion | Images |
+|---|---:|
+| Training source | 5,216 |
+| Training split | 4,172 |
+| Validation split | 1,044 |
+| Official test set | 624 |
+| Total | 5,840 |
 
-## Model
+The training source was divided using a stratified 80:20 split.
 
-A custom CNN built with PyTorch uses convolutional layers, ReLU activations, max-pooling, and a final linear classifier. The model accepts single-channel, 224 × 224 images and outputs a pneumonia logit.
+The official test set contains 234 NORMAL and 390 PNEUMONIA images.
 
-## Experiments
+Dataset files are not included in this repository.
 
-The project compares three preprocessing strategies:
+## Model Architecture
 
-- Direct resizing to 224 × 224
-- Aspect-ratio-preserving resizing with padding
-- Randomized padding during training
+A custom CNN implemented in PyTorch.
 
-It also explores validation-based threshold selection and Grad-CAM visualizations of selected predictions.
+- Input: single-channel grayscale image.
+- Image dimensions: 224 Ã— 224.
+- Convolutional layers with 16 and 32 channels.
+- ReLU activation functions.
+- Max-pooling layers.
+- Fully connected binary classification layer.
+- Output: pneumonia logit, converted to a probability for prediction.
 
-## Evaluation
+The model uses `BCEWithLogitsLoss` for binary classification.
 
-The model achieved approximately 97% validation accuracy, but performance on the official test set was substantially lower. For the randomized-padding model at a 0.50 threshold, test accuracy was approximately 76.9%, with a ROC-AUC of 0.943.
+## Evaluation Results
 
-This gap indicates that validation accuracy alone is not sufficient to establish generalization. The official test set was also used during exploratory comparisons, so it should not be considered an untouched, independent final evaluation.
+The randomized-padding model was evaluated at different classification thresholds.
 
-Threshold selection should be performed using validation data, not by optimizing results on the test set.
+| Metric | Validation (0.30) | Official test (0.30) |
+|---|---:|---:|
+| Accuracy | 97.13% | 74.04% |
+| ROC-AUC | 0.9948 | 0.9429 |
 
-## Explainability and Error Analysis
+At a 0.50 threshold, official test accuracy was approximately **76.92%**, with a ROC-AUC of approximately **0.943**.
 
-The project includes exploratory analyses of:
+The substantial validation-to-test accuracy gap highlights the importance of investigating generalization rather than relying on validation accuracy alone.
 
-- Grad-CAM activation maps for selected images
-- False-positive NORMAL predictions
-- Sensitivity to modifications of image padding
-- Validation classification metrics across probability thresholds
+**Evaluation caveat:** The official test set was used repeatedly during exploratory analysis. Therefore, these results should not be interpreted as an untouched, independent final evaluation. Threshold selection should be based on validation data, not optimized against the test set.
 
-These analyses are preliminary. Grad-CAM highlights model activations but does not prove which features caused a prediction. Padding interventions create artificial inputs and do not establish the cause of classification errors.
+## Explainability and Experiments
 
-### Generated Reports
+### 1. Grad-CAM Explainability
 
-- `reports/figures/false_positive_gradcam.png`
-- `reports/figures/padding_sensitivity_changes.png`
-- `reports/figures/validation_threshold_curve.png`
-- `reports/marker_sensitivity_top5.csv`
-- `reports/validation_threshold_results.csv`
+Grad-CAM was used to visualize regions associated with model activations for selected predictions.
+
+The analysis includes:
+- Correct NORMAL predictions.
+- Correct PNEUMONIA predictions.
+- NORMAL false-positive predictions.
+- Region-level activation comparisons.
+
+Visual reports:
+- [Correct NORMAL Grad-CAM](reports/gradcam_visualizations/correct_normal.png)
+- [Correct PNEUMONIA Grad-CAM](reports/gradcam_visualizations/correct_pneumonia.png)
+- [NORMAL false-positive Grad-CAM](reports/gradcam_visualizations/normal_false_positives.png)
+- [Complete Grad-CAM report (PDF)](reports/gradcam_visualizations/gradcam_complete_visual_report.pdf)
+
+Grad-CAM provides an exploratory view of model activations. It does not establish causal explanations for predictions.
+
+### 2. Marker Sensitivity Experiments
+
+Controlled image modifications were used to investigate model sensitivity around manually identified marker regions.
+
+The experiments compared marker-region logit changes against control regions, including:
+- Local-mean replacement.
+- Blur-based modifications.
+- Random control regions.
+- Additional robustness comparisons.
+
+In the selected 12-image analysis, marker-region changes exceeded the control 95th percentile in 12/12 images for local-mean replacement and 11/12 images for blur.
+
+These findings suggest elevated sensitivity to the selected regions in this sample. They do not prove that the model causally relies on medical image markers.
+
+### 3. Corner Suppression Fine-Tuning
+
+A controlled experiment compared a baseline fine-tuned model with a model trained using random border-patch replacement on a proportion of training images.
+
+The experiment used:
+- Five fine-tuning epochs.
+- The same initial checkpoint.
+- Matching training settings.
+- Validation performance comparisons.
+- Marker sensitivity comparisons.
+
+The two models achieved nearly identical validation performance, and border suppression did not meaningfully reduce marker sensitivity in the selected analysis.
+
+This experiment does not establish that all corner or border-related shortcuts have been eliminated.
+
+Visual results:
+- [Overall marker sensitivity](models/corner_suppression_experiment/final_plots/overall_marker_sensitivity.png)
+- [Marker control exceedance](models/corner_suppression_experiment/final_plots/marker_control_exceedance.png)
+- [Local-mean group sensitivity](models/corner_suppression_experiment/final_plots/group_sensitivity_local_mean.png)
+- [Blur group sensitivity](models/corner_suppression_experiment/final_plots/group_sensitivity_blur.png)
+
+## Repository Structure
+
+```text
+chest-xray-ai/
+â”‚
+â”œâ”€â”€ app/
+â”œâ”€â”€ data/
+â”œâ”€â”€ models/
+â”‚   â””â”€â”€ corner_suppression_experiment/
+â”‚       â””â”€â”€ final_plots/
+â”‚
+â”œâ”€â”€ notebooks/
+â”œâ”€â”€ reports/
+â”‚   â”œâ”€â”€ figures/
+â”‚   â””â”€â”€ gradcam_visualizations/
+â”‚       â””â”€â”€ marker_inspection/
+â”‚
+â”œâ”€â”€ results/
+â”œâ”€â”€ src/
+â”‚
+â”œâ”€â”€ chest_xray_pneumonia_analysis.ipynb
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ README.md
+â””â”€â”€ .gitignore
+```
+
+Dataset files, virtual environments, and model checkpoint binaries are excluded through `.gitignore`.
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/anubhavsingh23906-code/chest-xray-ai.git
+cd chest-xray-ai
+```
+
+### 2. Create a virtual environment
+
+Windows:
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Prepare the dataset
+
+Place the dataset in the expected directory structure used by the notebook and project pipeline. Dataset files are not distributed with this repository.
+
+### 5. Explore the analysis
+
+Open:
+
+```bash
+jupyter notebook chest_xray_pneumonia_analysis.ipynb
+```
+
+Run the notebook cells in order after preparing the dataset and environment.
 
 ## Limitations and Future Work
 
 - Investigate the validation-to-test performance gap.
-- Check for dataset and preprocessing distribution differences.
-- Evaluate performance across different random seeds and splits.
+- Evaluate on a genuinely independent external dataset.
+- Repeat experiments across multiple random seeds and data splits.
+- Expand marker-region analysis to a larger, independently selected sample.
+- Investigate possible dataset and preprocessing biases.
 - Improve class-wise evaluation and error analysis.
-- Validate explainability findings across a larger, representative sample.
-- Evaluate on a genuinely independent dataset before making stronger generalization claims.
+- Validate explainability observations with more rigorous methods.
 
 ## Author
 
-**Anubhav Singh**  
-B.Tech, Computer Science and Engineering
+**Anubhav Singh**
 
-GitHub: [anubhavsingh23906-code](https://github.com/anubhavsingh23906-code)
+B.Tech â€” Computer Science and Engineering
+
+- GitHub: [anubhavsingh23906-code](https://github.com/anubhavsingh23906-code)
+- Project Repository: [chest-xray-ai](https://github.com/anubhavsingh23906-code/chest-xray-ai)
 
 ---
 
-**For research and learning purposes only. Not intended for clinical use.**
+*For educational and research purposes only. Not intended for clinical use.*
